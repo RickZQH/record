@@ -1,0 +1,115 @@
+
+
+linux环境搭建与资料获取
+================================
+
+开发主机：ubuntu18.04
+
+
+安装编译工具链
+*****************
+
+编译前ubuntu上需要安装教程编译工具
+
+.. code-block:: sh
+   :linenos:
+
+   sudo apt install make gcc-arm-linux-gnueabihf gcc bison flex libssl-dev dpkg-dev lzop
+
+
+
+
+挂载NFS网络文件系统
+********************
+
+.. code-block:: sh
+   :linenos:
+
+   #以下命令在主机上运行
+   sudo apt install nfs-kernel-server
+
+
+查看用户id，用户uid和组gid均为1000
+
+.. code-block:: sh
+   :linenos:
+
+    id
+    #打印信息
+    uid=1000(zhan) gid=1000(zhan) groups=1000(zhan)
+
+
+修改/etc/exports文件，添加下面这条语句
+
+.. code-block:: sh
+   :linenos:
+
+    /home/zhan/nfs_rootfs 192.168.123.0/24(rw,sync,all_squash,anonuid=1000,anongid=1000,no_subtree_check)
+
+在所在用户目录下新建nfs_rootfs目录，新建之后使用下面命令更新NFS配置
+
+.. code-block:: sh
+   :linenos:
+
+   #新建目录
+   mkdir nfs_rootfs
+
+   #以下命令在主机上运行
+   sudo exportfs -arv
+
+
+在开发板上挂载NFS文件系统
+
+.. code-block:: sh
+   :linenos:
+
+   #需先在野火imx6ull板子上安装nfs
+   sudo apt install nfs-common -y
+
+   #以下命令在野火开发板上运行
+   sudo mount -t nfs 192.168.123.62:/home/zhan/nfs_rootfs /mnt
+
+   #以下命令在韦东山开发板上运行 
+   mount -t nfs -o nolock,vers=3  192.168.123.62:/home/zhan/nfs_rootfs /mnt
+
+
+
+
+获取资料
+********************
+
+.. code-block:: sh
+   :linenos:
+
+   #基础资料git仓库
+   https://e.coding.net/weidongshan/01_all_series_quickstart.git
+
+   #驱动大全资料
+   https://e.coding.net/weidongshan/linux/doc_and_source_for_drivers.git
+
+
+获取源码
+********************
+   
+
+.. code-block:: sh
+   :linenos:
+
+   #1 获取源码命令
+   git clone https://e.coding.net/codebug8/repo.git 
+
+   #2
+   mkdir -p 100ask_imx6ull-sdk && cd 100ask_imx6ull-sdk
+
+   #3
+   ../repo/repo init -u https://gitee.com/weidongshan/manifests.git -b linux-sdk -m imx6ull/100ask_imx6ull_linux4.9.88_release.xml --no-repo-verify
+
+   #4
+   ../repo/repo sync -j4
+
+参考资料
+********************
+
+韦东山资料下载链接:
+http://weidongshan.gitee.io/informationdownloadcenter/index.html   
+

@@ -1,0 +1,49 @@
+
+编译体验
+===================
+
+编译内核
+------------
+
+
+.. code-block:: sh
+   :linenos:
+
+   #清除之前编译的内容
+   make mrproper
+
+   #配置编译文件
+   make ARCH=arm  100ask_imx6ull_defconfig
+
+   #编译内核   其中-j2 表示用于编译的核心数
+   make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-  zImage -j2 
+
+   #编译设备树
+   make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-  dtbs
+
+   #编译内核模块
+   make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- modules
+
+   #将模块安装到某个路径，以备用
+   sudo make ARCH=arm INSTALL_MOD_PATH=/home/zhan/nfs_rootfs modules_install
+
+
+编译得到的内核路径为：**arch/arm/boot/zImage**  替换板子上的路径为 **/boot**
+
+编译得到的设备树文件为： **arch/arm/boot/dts/100ask_imx6ull-14x14.dtb**  替换板子上的路径为 **/boot**
+
+
+编译uboot
+------------
+
+
+.. code-block:: sh
+   :linenos:
+
+   #清除之前编译的内容
+   make mrproper
+
+
+   make ARCH=arm mx6ull_14x14_evk_defconfig
+
+   make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf-

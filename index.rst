@@ -8,8 +8,14 @@
 
 .. toctree::
    :maxdepth: 1
-   :caption: 其他
+   :caption: 记录
 
+   Linux/开发环境搭建
+   Linux/编译体验
+   Linux/简单驱动的软件框架
+   
+   Linux/驱动模块编译及使用
+   
    Linux/草稿
 
 
