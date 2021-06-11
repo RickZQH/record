@@ -1,5 +1,6 @@
 #include "tinyOS.h"
 
+
 void tMboxInit (tMbox * mbox, void **msgBufer, uint32_t maxCount)
 {
 	tEventInit(&mbox->event, tEventTypeMbox);
@@ -11,10 +12,12 @@ void tMboxInit (tMbox * mbox, void **msgBufer, uint32_t maxCount)
 	mbox->count = 0;
 }
 
+//等待邮箱消息
 uint32_t tMboxWait (tMbox * mbox, void **msg, uint32_t waitTicks)
 {
 	uint32_t status = tTaskEnterCritical();
-	
+
+	//邮箱存在消息，获取消息
 	if (mbox->count > 0)
 	{
 		--mbox->count;
@@ -26,6 +29,7 @@ uint32_t tMboxWait (tMbox * mbox, void **msg, uint32_t waitTicks)
 		tTaskExitCritical(status);
 		return tErrorNoError;
 	}
+	//不存在消息
 	else
 	{
 		tEventWait(&mbox->event, currentTask, (void *)0, tEventTypeMbox, waitTicks);
@@ -38,6 +42,7 @@ uint32_t tMboxWait (tMbox * mbox, void **msg, uint32_t waitTicks)
 	}
 }
 
+//不阻塞获取邮箱消息
 uint32_t tMboxNoWaitGet (tMbox * mbox, void **msg)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -60,10 +65,12 @@ uint32_t tMboxNoWaitGet (tMbox * mbox, void **msg)
 	}
 }
 
+//发送邮箱消息
 uint32_t tMboxNotify (tMbox * mbox, void * msg, uint32_t notifyOption)
 {
 	uint32_t status = tTaskEnterCritical();
-	
+
+	//若有任务等待
 	if (tEventWaitCount(&mbox->event) > 0)
 	{
 		tTask * task = tEventWakeUp(&mbox->event, (void *)msg, tErrorNoError);
@@ -74,6 +81,7 @@ uint32_t tMboxNotify (tMbox * mbox, void * msg, uint32_t notifyOption)
 	}
 	else
 	{
+		//以达到邮箱最大等待次数
 		if (mbox->count >= mbox->maxCount)
 		{
 			tTaskExitCritical(status);
@@ -108,6 +116,7 @@ uint32_t tMboxNotify (tMbox * mbox, void * msg, uint32_t notifyOption)
 	return tErrorNoError;
 }
 
+//清空所有的邮箱消息
 void tMboxFlush (tMbox * mbox)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -122,6 +131,7 @@ void tMboxFlush (tMbox * mbox)
 	tTaskExitCritical(status);
 }
 
+//销毁邮箱
 uint32_t tMboxDestroy (tMbox * mbox)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -136,6 +146,7 @@ uint32_t tMboxDestroy (tMbox * mbox)
 	return count;
 }
 
+//获取邮箱信息
 void tMboxGetInfo (tMbox * mbox, tMboxInfo * info)
 {
 	uint32_t status = tTaskEnterCritical();

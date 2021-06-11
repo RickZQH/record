@@ -1,19 +1,19 @@
 #include "tinyOS.h"
 
 
-static tList tTimerHardList;
-static tList tTimerSoftList;
+static tList tTimerHardList;	//硬件定时器链表
+static tList tTimerSoftList;	//软件定时器链表
 static tSem tTimerProtectSem;
 static tSem tTimerTickSem;
 
 void tTimerInit (tTimer * timer, uint32_t delayTicks, uint32_t durationTicks,
 		void (*timerFunc) (void * arg), void * arg, uint32_t config)
 {
-	tNodeInit(&timer->linkNode);
-	timer->startDelayTicks = delayTicks;
-	timer->durationTicks = durationTicks;
-	timer->timerFunc = timerFunc;
-	timer->arg = arg;
+	tNodeInit(&timer->linkNode);			//初始化定时器节点
+	timer->startDelayTicks = delayTicks;	//
+	timer->durationTicks = durationTicks;	//
+	timer->timerFunc = timerFunc;			//回调函数
+	timer->arg = arg;						//回调函数参数
 	timer->config = config;
 	
 	if (delayTicks == 0)
@@ -28,6 +28,7 @@ void tTimerInit (tTimer * timer, uint32_t delayTicks, uint32_t durationTicks,
 	timer->state = tTimerCreated;
 }
 
+//启动定时器
 void tTimerStart (tTimer * timer)
 {
 	switch (timer->state)
@@ -40,13 +41,13 @@ void tTimerStart (tTimer * timer)
 			if (timer->config & TIMER_CONFIG_TYPE_HARD)
 			{
 				uint32_t status = tTaskEnterCritical();
-				tListAddFirst(&tTimerHardList, &timer->linkNode);
+				tListAddFirst(&tTimerHardList, &timer->linkNode); //添加到硬件定时器链表
 				tTaskExitCritical(status);
 			}
 			else
 			{
 				tSemWait(&tTimerProtectSem, 0);
-				tListAddLast(&tTimerSoftList, &timer->linkNode);
+				tListAddLast(&tTimerSoftList, &timer->linkNode);  //添加到软件定时器链表
 				tSemNotify(&tTimerProtectSem);
 			}
 			break;
@@ -128,10 +129,10 @@ static void tTimerCallFuncList (tList * timerList)
 	}
 }
 
-static tTask tTimeTask;
-static tTaskStack tTimerTaskStack[TINYOS_TIMERTASK_STACK_SIZE];
+static tTask tTimeTask;			//定时器任务句柄
+static tTaskStack tTimerTaskStack[TINYOS_TIMERTASK_STACK_SIZE]; //定时器任务栈
 
-static void tTimerSoftTask (void * param)
+static void tTimerSoftTask (void * param) //定时器任务入口
 {
 	for (;;)
 	{
@@ -159,10 +160,11 @@ void tTimerModuleTickNotify (void)
 
 void tTimerModuleInit (void)
 {
-	tListInit(&tTimerHardList);
-	tListInit(&tTimerSoftList);
-	tSemInit(&tTimerProtectSem, 1, 1);
-	tSemInit(&tTimerTickSem, 0, 0);
+	tListInit(&tTimerHardList);			//初始化硬件定时器链表
+	tListInit(&tTimerSoftList);			//初始化软件定时器链表
+	
+	tSemInit(&tTimerProtectSem, 1, 1);  //初始化信号量
+	tSemInit(&tTimerTickSem, 0, 0);		
 	
 }
 

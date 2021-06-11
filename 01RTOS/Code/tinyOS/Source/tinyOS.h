@@ -25,12 +25,13 @@
 
 #define	TICKS_PER_SEC			(1000 / TINYOS_SYSTICK_MS)
 
+//错误标志
 typedef enum _tError {
-	tErrorNoError = 0,
-	tErrorTimeout,
+	tErrorNoError = 0,			//无错误
+	tErrorTimeout,				//超时
 	tErrorResourceUnavaliable,
 	tErrorDel,
-	tErrorResourceFull,
+	tErrorResourceFull,			//资源满
 	tErrorOwner,
 }tError;
 

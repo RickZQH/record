@@ -3,15 +3,17 @@
 
 #include "tEvent.h"
 
+//内存块
 typedef struct _tMemBlock
 {
-	tEvent event;
-	void * memStart;
-	uint32_t blockSize;
-	uint32_t maxCount;
-	tList blockList;
+	tEvent event;		  //事件
+	void * memStart;	  //内存起始地址
+	uint32_t blockSize;   //块大小
+	uint32_t maxCount;	  //最大计数
+	tList blockList;	  //块链表节点
 }tMemBlock;
 
+//块信息
 typedef struct _tMemBlockInfo
 {
 	uint32_t count;

@@ -5,9 +5,9 @@
 
 typedef struct _tSem
 {
-	tEvent event;
-	uint32_t count;
-	uint32_t maxCount;
+	tEvent event;		//继承事件结构
+	uint32_t count;		//计数
+	uint32_t maxCount;  //最大计数
 }tSem;
 
 typedef struct _tSemInfo

@@ -25,6 +25,7 @@ void tMemBlockInit (tMemBlock * memBlock, uint8_t * memStart, uint32_t blockSize
 	}
 }
 
+//等待内存块
 uint32_t tMemBlockWait (tMemBlock * memBlock, uint8_t **mem, uint32_t waitTicks)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -47,6 +48,7 @@ uint32_t tMemBlockWait (tMemBlock * memBlock, uint8_t **mem, uint32_t waitTicks)
 	}
 }
 
+//等待获取内存块
 uint32_t tMemBlockNoWaitGet (tMemBlock * memBlock, void ** mem)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -64,10 +66,12 @@ uint32_t tMemBlockNoWaitGet (tMemBlock * memBlock, void ** mem)
 	}
 }
 
+//内存块通知
 void tMemBlockNotify (tMemBlock * memBlock, uint8_t * mem)
 {
 	uint32_t status = tTaskEnterCritical();
-	
+
+	//若有任务在等待事件块
 	if (tEventWaitCount(&memBlock->event) > 0)
 	{
 		tTask * task = tEventWakeUp(&memBlock->event, (void *)mem, tErrorNoError);
@@ -83,6 +87,7 @@ void tMemBlockNotify (tMemBlock * memBlock, uint8_t * mem)
 	tTaskExitCritical(status);
 }
 
+//获取内存块信息
 void tMemBlockGetInfo (tMemBlock * memBlock, tMemBlockInfo * info)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -95,6 +100,7 @@ void tMemBlockGetInfo (tMemBlock * memBlock, tMemBlockInfo * info)
 	tTaskExitCritical(status);
 }
 
+//销毁内存块
 uint32_t tMemBlockDestroy (tMemBlock * memBlock)
 {
 	uint32_t status = tTaskEnterCritical();

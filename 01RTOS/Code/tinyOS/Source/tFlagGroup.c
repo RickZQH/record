@@ -1,11 +1,13 @@
 #include "tinyOS.h"
 
+//初始化
 void tFlagGroupInit (tFlagGroup * flagGroup, uint32_t flags)
 {
 	tEventInit(&flagGroup->event, tEventTypeFlagGroup);
 	flagGroup->flag = flags;
 }
 
+//检测并消耗函数
 static uint32_t tFlagGroupCheckAndConsume (tFlagGroup * flagGroup, uint32_t type, uint32_t * flags)
 {
 	uint32_t srcFlag = *flags;

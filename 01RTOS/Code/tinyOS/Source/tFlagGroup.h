@@ -3,22 +3,26 @@
 
 #include "tEvent.h"
 
+//事件组标志
 typedef struct _tFlagGroup
 {
 	tEvent event;
 	uint32_t flag;
 }tFlagGroup;
 
+//事件组标志信息
 typedef struct _tFlagGroupInfo
 {
 	uint32_t flags;
 	uint32_t taskCount;
 }tFlagGroupInfo;
 
+
 #define	TFLAGGROUP_CLEAR		(0x0 << 0)
 #define	TFLAGGROUP_SET			(0x1 << 0)
 #define	TFLAGGROUP_ANY			(0x0 << 1)
 #define	TFLAGGROUP_ALL			(0x1 << 1)
+
 
 #define	TFLAGGROUP_SET_ALL		(TFLAGGROUP_SET | TFLAGGROUP_ALL)
 #define	TFLAGGROUP_SET_ANY		(TFLAGGROUP_SET | TFLAGGROUP_ANY)

@@ -1,6 +1,7 @@
 #include "tinyOS.h"
 #include "ARMCM3.h"
 
+//初始化Systick定时器
 void tSetSysTickPeriod (uint32_t ms)
 {
 	SysTick->LOAD = ms * SystemCoreClock / 1000 - 1;
@@ -11,6 +12,7 @@ void tSetSysTickPeriod (uint32_t ms)
 					SysTick_CTRL_ENABLE_Msk;
 }
 
+//Systick定时器中断
 void SysTick_Handler ()
 {
 	tTaskSystemTickHandler();

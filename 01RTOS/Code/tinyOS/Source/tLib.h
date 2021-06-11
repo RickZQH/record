@@ -8,12 +8,13 @@ typedef struct
 	uint32_t bitmap;
 }tBitmap;
 
-void tBitmapInit (tBitmap * bitmap);
-uint32_t tBitmapPosCount (void);
-void tBitmapSet (tBitmap * bitmap, uint32_t pos);
-void tBitmapClear (tBitmap * bitmap, uint32_t pos);
-uint32_t tBitmapGetFirstSet (tBitmap * bitmap);
+void tBitmapInit (tBitmap * bitmap);				      //位图初始化
+uint32_t tBitmapPosCount (void);					      //返回优先级级数				
+void tBitmapSet (tBitmap * bitmap, uint32_t pos);	    //位图置位
+void tBitmapClear (tBitmap * bitmap, uint32_t pos);   //位图清零
+uint32_t tBitmapGetFirstSet (tBitmap * bitmap);			   //获取最高位为1为第几位
 
+//链表结构
 typedef struct _tNode
 {
 	struct _tNode * preNode;

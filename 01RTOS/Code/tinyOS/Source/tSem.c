@@ -3,7 +3,7 @@
 
 void tSemInit (tSem * sem, uint32_t startCount, uint32_t maxCount)
 {
-	tEventInit(&sem->event, tEventTypeSem);
+	tEventInit(&sem->event, tEventTypeSem);  //初始化事件
 	
 	sem->maxCount = maxCount;
 	if (maxCount == 0)
@@ -19,7 +19,8 @@ void tSemInit (tSem * sem, uint32_t startCount, uint32_t maxCount)
 uint32_t tSemWait (tSem * sem, uint32_t waitTicks)
 {
 	uint32_t status = tTaskEnterCritical();
-	
+
+	//获取信号量成功
 	if (sem->count > 0)
 	{
 		--sem->count;
@@ -28,7 +29,8 @@ uint32_t tSemWait (tSem * sem, uint32_t waitTicks)
 	}
 	else
 	{
-		tEventWait(&sem->event, currentTask, (void *)0, tEventTypeSem, waitTicks);
+		//获取失败则开始等待事件
+		tEventWait(&sem->event, currentTask, (void *)0, tEventTypeSem, waitTicks); 
 		tTaskExitCritical(status);
 		
 		tTaskSched();
@@ -37,6 +39,7 @@ uint32_t tSemWait (tSem * sem, uint32_t waitTicks)
 	}
 }
 
+//获取信号量但不等待
 uint32_t tSemNoWaitGet (tSem * sem)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -54,13 +57,14 @@ uint32_t tSemNoWaitGet (tSem * sem)
 	}
 }
 
-
+//信号量通知
 void tSemNotify (tSem * sem)
 {
 	uint32_t status = tTaskEnterCritical();
 	
 	if (tEventWaitCount(&sem->event) > 0)
 	{
+		//当有任务等待信号释放时
 		tTask * task = tEventWakeUp(&sem->event, (void *)0, tErrorNoError);
 		if (task->prio < currentTask->prio)
 		{
@@ -69,6 +73,7 @@ void tSemNotify (tSem * sem)
 	}
 	else
 	{
+		//释放信号量
 		++sem->count;
 		if ((sem->maxCount != 0) && (sem->count > sem->maxCount))
 		{
@@ -78,6 +83,7 @@ void tSemNotify (tSem * sem)
 	tTaskExitCritical(status);
 }
 
+//获取信号量信息
 void tSemGetInfo (tSem * sem, tSemInfo * info)
 {
 	uint32_t status = tTaskEnterCritical();
@@ -89,6 +95,7 @@ void tSemGetInfo (tSem * sem, tSemInfo * info)
 	tTaskExitCritical(status);
 }
 
+//删除信号量
 uint32_t tSemDestroy (tSem * sem)
 {
 	uint32_t status = tTaskEnterCritical();
