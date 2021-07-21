@@ -9,8 +9,13 @@
    :caption: RTOS
 
    01RTOS/01Cortex-M架构/Cortex-M3
+   01RTOS/01Cortex-M架构/指令集
 
+   01RTOS/02RT-thread_启动流程/startup
+   01RTOS/03RT-thread_IO设备模型/RT-thread_IO设备模型
+   01RTOS/04组件初始化/组件初始化.rst
 
+   MCU/音频基本
 
 .. toctree::
    :maxdepth: 1
