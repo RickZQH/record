@@ -3,6 +3,7 @@
 目录
 ================================
 
+
 .. toctree::
    :maxdepth: 1
    :numbered:
@@ -15,7 +16,7 @@
    01RTOS/03RT-thread_IO设备模型/RT-thread_IO设备模型
 
 
-   MCU/音频基本
+   #MCU/音频基本
 
 .. toctree::
    :maxdepth: 1

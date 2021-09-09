@@ -17,8 +17,8 @@
 
 # -- Project information -----------------------------------------------------
 
-project = '小记'
-copyright = '2020, RickZ'
+project = '记录'
+copyright = '2021, RickZ'
 author = 'RickZ'
 
 
@@ -32,6 +32,7 @@ master_doc = 'index'
 extensions = [
   'sphinx_markdown_tables',
   'sphinx.ext.autosectionlabel',
+  'sphinx_rtd_theme',
 ]
 
 # The suffix(es) of source filenames.
