@@ -1,3 +1,9 @@
+### USB
+
+
+
+#### 基本概念
+
 
 
 usb1.0 usb1.1  
@@ -9,6 +15,8 @@ usb1.0 usb1.1
 usb2.0    
 
 ​	高速  high-speed 480Mb/s
+
+
 
 
 
@@ -35,6 +43,8 @@ usb2.0
 ​		方便人们阅读的信息非必须
 
 
+
+SB协议规定了四种传输类型：控制传输、[批量传输](http://www.usbzh.com/article/detail-40.html)、[同步传输](http://www.usbzh.com/article/detail-118.html)、[中断传输](http://www.usbzh.com/article/detail-109.html)。
 
 传输模式：
 
@@ -94,8 +104,6 @@ USB总线传输数据以包为基本单位，一个包被分成不同的域，�
 
 
 
-
-
 | PID类型 | PID名  | PID  | 说明                 |
 | ------- | ------ | ---- | -------------------- |
 | 令牌类  | OUT    |      | 通知设备将于输出数据 |
@@ -117,130 +125,187 @@ USB总线传输数据以包为基本单位，一个包被分成不同的域，�
 
 
 
-### uac相关
+每个usb设置至少都有一个配置描述符，在设备描述符中规定了该设备有多少种设备配置。
 
 
 
-UAC音频控制接口和UAC音频流接口
+当某个描述符中的字符串索引值为非0时，表示具有那个字符串描述符，索引值不能重复。
+
+当索引值为0时表示获取语言ID，字符串描述符中的bString使用UNICODE编码
 
 
+
+#### 描述符
+
+-   每一个USB设备只有一个[设备描述符](http://www.usbzh.com/article/detail-104.html)，主要向主机说明设备类型、端点0最大包长、设备版本、配置数量等等。
+-   每一个USB设备至少有一个或者多个[配置描述符](http://www.usbzh.com/article/detail-67.html)，但是主机同一时间只能选择某一种配置，标准[配置描述符](http://www.usbzh.com/article/detail-67.html)主要向主机描述当前配置下的设备属性、所需电流、支持的接口数、[配置描述符](http://www.usbzh.com/article/detail-67.html)集合长度等等。
+-   主机在获取配置描述符集合的时候会先获取一次标准配置描述符，然后根据里面的配置描述符集合长度属性值获取配置描述符集合的所有描述符信息，配置描述符集合有标准配置描述符、[接口描述符](http://www.usbzh.com/article/detail-64.html)、[端点描述符](http://www.usbzh.com/article/detail-56.html)、[HID描述符](http://www.usbzh.com/article/detail-62.html)。
+-   每一个USB配置下至少有一个或者多个[接口描述符](http://www.usbzh.com/article/detail-64.html)，[接口描述符](http://www.usbzh.com/article/detail-64.html)主要说明设备类型、此接口下使用的端点数（不包括0号号端点），一个接口就是实现一种功能，实现这种功能可能需要端点0就够了，可能还需要其它的端点配合。
+-   每一个USB接口下至少有0个或者多个[端点描述符](http://www.usbzh.com/article/detail-56.html)，[端点描述符](http://www.usbzh.com/article/detail-56.html)用来描述符端点的各种属性。
+-   端点是实现USB设备功能的物理缓冲区实体，USB主机和设备是通过端点进行数据交互的。
+-   一个USB设备有一个或多个配置描述符。每个配置有一个或多个接口，每个接口有零个或多个端点。
+-   [字符串描述符](http://www.usbzh.com/article/detail-53.html)就是用字符串描述一个设备的一些属性，描述的属性包括设备厂商名字、产品名字、产品序列号、各个配置名字、各个接口名字。
+-   [HID描述符](http://www.usbzh.com/article/detail-62.html)只有HID设备才会存在。
+-   HID设备至少有一个[报告描述符](http://www.usbzh.com/article/detail-48.html)。
+-   [报告描述符](http://www.usbzh.com/article/detail-48.html)主要作用就是描述主机和HID设备交互的数据，向主机说明这些数据中哪些位是用来做什么用的
+
+
+
+![USB逻辑图](./media/描述符关系.png)
+
+
+
+##### 设备描述符
 
 ```C
-
-struct uac1_control
+struct udevice_descriptor
 {
-#ifdef RT_USB_DEVICE_COMPOSITE
-    struct uiad_descriptor iad_desc;
-#endif
-    struct uinterface_descriptor interface_desc;
-    struct uac1_ac_header_descriptor_2 header_desc;
-    struct uac_input_terminal_descriptor usb_out_it_desc;
-    struct uac1_output_terminal_descriptor io_out_ot_desc;
-    struct uac_feature_unit_descriptor_0 usb_out_it_feature_desc;
-    struct uac_input_terminal_descriptor io_in_it_desc;
-    struct uac1_output_terminal_descriptor usb_in_ot_desc;
-    struct uac_feature_unit_descriptor_0 io_in_it_feature_desc;
+    uint8_t bLength;			//设备描述符的字节数大小，为0x12 
+    uint8_t type;				//描述符类型编号，为0x01 
+    uint16_t bcdUSB;			//USB版本号    
+    uint8_t bDeviceClass;		//USB分配的设备类代码，0x01~0xfe为标准设备类，0xff为厂商自定义类型 
+                           		//0x00不是在设备描述符中定义的，如HID 
+    uint8_t bDeviceSubClass;	//usb分配的子类代码，同上，值由USB规定和分配的 
+    uint8_t bDeviceProtocol;	//USB分配的设备协议代码，同上 
+    uint8_t bMaxPacketSize0;	//端点0的最大包的大小 
+    uint16_t idVendor;			//厂商编号 
+    uint16_t idProduct;			//产品编号 
+    uint16_t bcdDevice;			//设备出厂编号 
+    uint8_t iManufacturer;		//描述厂商字符串的索引 
+    uint8_t iProduct;			//描述产品字符串的索引 
+    uint8_t iSerialNumber;	    //描述设备序列号字符串的索引 
+    uint8_t bNumConfigurations;	//配置描述符数量
 };
-typedef struct uac1_control *uac1_control_t;
-
-struct uac1_interface_alt
-{
-    struct uinterface_descriptor interface_desc;
-    struct uac1_as_header_descriptor as_header_desc;
-    struct uac_format_type_i_discrete_descriptor_6 type_i_desc;
-    struct uaudio_endpoint_descriptor endpoint_desc;
-    struct uac_iso_endpoint_descriptor iso_endpoint_desc;
-};
-
-
-
-//创建时申请的内存
-{
-    uac1_control
-    uinterface_descriptor
-    uac1_interface_alt
-    uinterface_descriptor
-    uac1_interface_alt
-}
-
-//RT-thread uac描述符
-struct uac1_control
-{
-#ifdef RT_USB_DEVICE_COMPOSITE
-    struct uiad_descriptor iad_desc;								//协议接口描述符
-#endif
-    struct uinterface_descriptor interface_desc;					//接口关联描述符
-    struct uac1_ac_header_descriptor_2 header_desc;					//特定音频控制接口头描述符
-    struct uac_input_terminal_descriptor usb_out_it_desc;			//输入终端描述符
-    struct uac1_output_terminal_descriptor io_out_ot_desc;			//输出终端描述符
-    struct uac_feature_unit_descriptor_0 usb_out_it_feature_desc;	//特性单元描述符
-    struct uac_input_terminal_descriptor io_in_it_desc;				//输入终端描述符	
-    struct uac1_output_terminal_descriptor usb_in_ot_desc;			//输出终端描述符
-    struct uac_feature_unit_descriptor_0 io_in_it_feature_desc;		//特性单元描述符
-};
-
-//其他描述符
-    
-    
-
-
 ```
 
 
 
+##### 配置描述符
+
 ```C
-//DCX81 cdc描述符
+struct uconfig_descriptor
 {
-    //协议接口描述符
-    //标准接口描述符
-    //端点描述符1 in
-    //标准接口描述符1
-    //端点描述符2 out
-    //端点描述符2 in   
-}
-
-//uac描述符
-{
-    //1.接口协议描述符
-    //2.标准音频控制接口描述符 接口1
-    //3.特殊音频控制接口描述符
-    
-    //4.耳机usb输入描述符 ID1
-    //5.耳机麦克风输入端描述符 ID4    
-    //6.耳机功能单元描述符 ID2
-    //7.耳机功能单元描述符 ID5
-    //8.耳机功能单元描述符 ID7
-    //9.耳机混合器单元描述符 ID8
-    //10.耳机扬声器输出终端描述符 ID3
-    //11.耳机扬声器输出终端描述符 ID6
-    
-    //12.耳机扬声器输出音频流接口描述符-接口1
-    //13.耳机扬声器标准AS接口描述符-接口1备用1
-    //14.耳机扬声器类特定的AS通用接口描述符
-    //15.耳机扬声器格式类型描述符
-    //16.耳机扬声器标准AS音频数据端点
-    //17.耳机扬声器类特定的同步音频数据端点描述符
-    
-    //18.耳机麦克风在音频流接口描述符-接口2
-    //19.耳机麦克风标准AS接口描述符-接口2备选1
-    //20.耳机麦克风类特定的AS通用接口描述符
-    //21.耳机麦克风格式类型描述符
-    //22.耳机麦克风标准AS音频数据端点
-    //23.耳机麦克风类特定的等时音频数据端点描述符
-}
-
-
+    uint8_t bLength;				//配置描述符的字节数大小，为0x09 
+    uint8_t type;					//描述符类型编号，为0x02 
+    uint16_t wTotalLength;			//此配置信息的总长（包括接口，端点和设备类及厂商定义的描述符）
+    uint8_t bNumInterfaces;			//此配置所支持的接口数量 
+    uint8_t bConfigurationValue;	//Set_Configuration命令需要的参数值 
+    uint8_t iConfiguration;			//描述该配置的字符串的索引值 
+    uint8_t bmAttributes;			//供电模式的选择 
+    uint8_t MaxPower;				//设备从总线提取的最大电流 
+    //uint8_t data[2048];
+};
 ```
 
 
 
-问题判断：----重点检查和音频相关传输的描述符
+##### 接口描述符
+
+```C
+struct uinterface_descriptor
+{
+    uint8_t bLength;				//设备描述符的字节数大小，为0x09
+    uint8_t type;					//描述符类型编号，为0x04
+    uint8_t bInterfaceNumber;		//接口的编号 
+    uint8_t bAlternateSetting;		//备用的接口描述符编号
+    uint8_t bNumEndpoints;			//该接口使用端点数，不包括端点0
+    uint8_t bInterfaceClass;		//接口类型 
+    uint8_t bInterfaceSubClass;		//接口子类型 
+    uint8_t bInterfaceProtocol;		//接口所遵循的协议
+    uint8_t iInterface;				//描述该接口的字符串索引值 
+};
+```
+
+
+
+##### 端点描述符
+
+```C
+struct uendpoint_descriptor
+{
+    uint8_t  bLength;				//描述符大小．固定为0x07
+    uint8_t  type;					//描述符类型编号，为0x05
+    uint8_t  bEndpointAddress;		//端点地址及输入输出属性
+    uint8_t  bmAttributes;			//端点的传输类型属性 
+    uint16_t wMaxPacketSize;		//端点收、发的最大包的大小 
+    uint8_t  bInterval;				//主机查询端点的时间间隔 
+};
+```
+
+
+
+##### 字符串描述符
+
+```C
+struct ustring_descriptor
+{
+    uint8_t bLength;		//描述符大小
+    uint8_t type;			//接口描述符类型，固定为0x03
+    uint8_t String[1];		//Unicode编码字符串
+    //uint8_t String[64];	
+};
+```
+
+当设置索引为0时，USB设备语言ID
+
+
+
+#### usb标准请求
+
+USB定义了8个字节的标准请求，通过这些请求，可以对设备的状态进行更改或对设备进行枚举。
+USB的标准请求的数据传输方式都是[控制传输](http://www.usbzh.com/article/detail-55.html)方式，所以使用的端点是设备的默认端点0。
+
+
+
+数据结构如下
+
+| 1字节            | 1字节         | 2字节       | 2字节       | 2字节        |
+| ---------------- | ------------- | ----------- | ----------- | ------------ |
+| bmRequestType(1) | bRequest（1） | wValue（2） | wIndex（2） | wLength（2） |
+
+
+
+USB标准请求类型如下
+
+| bmRequestType(1) | bRequest(1)                                                  | wValue(2)                                  | wIndex(2)                                                    | wLength(2)   | 数据过程         |
+| ---------------- | ------------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------ | ------------ | ---------------- |
+| 0x00             | [CLEAR_FEATURE](http://www.usbzh.com/article/detail-89.html)(1) | 特性选择                                   | 0                                                            | 0            | 没有数据         |
+| 0x01             | [CLEAR_FEATURE](http://www.usbzh.com/article/detail-89.html)(1) | 特性选择                                   | 接口号                                                       | 0            | 没有数据         |
+| 0x02             | CLEAR_FEATURE(1)                                             | 特性选择                                   | 端点号                                                       | 0            | 没有数据         |
+| 0x80             | [GET_CONFIGURATION](http://www.usbzh.com/article/detail-49.html)(8) | 0                                          | 0                                                            | 1            | 配置制           |
+| 0x80             | GET_DESCRIPTOR(6)                                            | 描述符类型（高字节）和描述符索引（低字节） | 0或语言ID([字符串描述符](http://www.usbzh.com/article/detail-53.html)) | 描述符的长度 | 描述符           |
+| 0x81             | [GET_INTERFACE](http://www.usbzh.com/article/detail-54.html)(0x0a) | 0                                          | 接口号                                                       | 1            | 备用（转换）接口 |
+| 0x80             | [GET_STATUS](http://www.usbzh.com/article/detail-38.html)(0) | 0                                          | 0                                                            | 2            | 设备状态         |
+| 0x81             | [GET_STATUS](http://www.usbzh.com/article/detail-38.html)(0) | 0                                          | 接口号                                                       | 2            | 接口状态         |
+| 0x82             | GET_STATUS(0)                                                | 0                                          | 端点号                                                       | 2            | 端点状态         |
+| 0x00             | [SET_ADDRESS](http://www.usbzh.com/article/detail-112.html)(5) | 设备地址                                   | 0                                                            | 0            | 没有数据         |
+| 0x00             | [SET_CONFIGURATION](http://www.usbzh.com/article/detail-75.html)(9) | 配置值                                     | 0                                                            | 0            | 没有数据         |
+| 0x00             | [SET_DESCRIPTOR](http://www.usbzh.com/article/detail-114.html)(7) | 描述符类型（高字节）和描述符索引（低字节） | 0或语言ID([字符串描述符](http://www.usbzh.com/article/detail-53.html)) | 描述符的长度 | 描述符           |
+| 0x00             | [SET_FEATURE](http://www.usbzh.com/article/detail-24.html)(3) | 特性选择                                   | 0                                                            | 0            | 没有数据         |
+| 0x01             | [SET_FEATURE](http://www.usbzh.com/article/detail-24.html)(3) | 特性选择                                   | 接口号                                                       | 0            | 没有数据         |
+| 0x02             | SET_FEATURE(3)                                               | 特性选择                                   | 端点号                                                       | 0            | 没有数据         |
+| 0x01             | [SET_INTERFACE](http://www.usbzh.com/article/detail-28.html)(0x0b) | 备用接口号（转换接口号）                   | 接口号                                                       | 0            | 没有数据         |
+| 0x82             | [SYNCH_FRAME](http://www.usbzh.com/article/detail-44.html)(0x0c) | 0                                          | 端点号                                                       | 2            | 帧号             |
+
+
+
+常见的标准请求如下
+
+​		a.GET_DESCRIPTOR  （获取描述符）
+
+​				全速和低速模式下只有：1、获取设备描述符 2、获取配置描述符 3、获取字符串描述符
+
+​				接口描述符和端点描述符跟随配置描述符一起返回
+
+​		b.SET_ADDRESS (请求设备使用指定地址地址)
+
+​		c.SET_CONFIGURATION (设置配置)
 
 
 
 
 
+#### 参考
 
-
-
+[USB中文网](http://www.usbzh.com/article/detail-177.html)
 
