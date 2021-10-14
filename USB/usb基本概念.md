@@ -1,8 +1,8 @@
-### USB
+# USB
 
 
 
-#### 基本概念
+## 基本概念
 
 
 
@@ -135,7 +135,7 @@ USB总线传输数据以包为基本单位，一个包被分成不同的域，�
 
 
 
-#### 描述符
+## 描述符
 
 -   每一个USB设备只有一个[设备描述符](http://www.usbzh.com/article/detail-104.html)，主要向主机说明设备类型、端点0最大包长、设备版本、配置数量等等。
 -   每一个USB设备至少有一个或者多个[配置描述符](http://www.usbzh.com/article/detail-67.html)，但是主机同一时间只能选择某一种配置，标准[配置描述符](http://www.usbzh.com/article/detail-67.html)主要向主机描述当前配置下的设备属性、所需电流、支持的接口数、[配置描述符](http://www.usbzh.com/article/detail-67.html)集合长度等等。
@@ -173,7 +173,7 @@ USB总线传输数据以包为基本单位，一个包被分成不同的域，�
 
 
 
-##### 设备描述符
+### 设备描述符
 
 ```C
 struct udevice_descriptor
@@ -198,7 +198,7 @@ struct udevice_descriptor
 
 
 
-##### 配置描述符
+### 配置描述符
 
 ```C
 struct uconfig_descriptor
@@ -217,7 +217,7 @@ struct uconfig_descriptor
 
 
 
-##### 接口描述符
+### 接口描述符
 
 ```C
 struct uinterface_descriptor
@@ -236,7 +236,7 @@ struct uinterface_descriptor
 
 
 
-##### 端点描述符
+### 端点描述符
 
 ```C
 struct uendpoint_descriptor
@@ -252,7 +252,7 @@ struct uendpoint_descriptor
 
 
 
-##### 字符串描述符
+### 字符串描述符
 
 ```C
 struct ustring_descriptor
@@ -268,7 +268,7 @@ struct ustring_descriptor
 
 
 
-#### usb标准请求
+## usb标准请求
 
 USB定义了8个字节的标准请求，通过这些请求，可以对设备的状态进行更改或对设备进行枚举。
 USB的标准请求的数据传输方式都是[控制传输](http://www.usbzh.com/article/detail-55.html)方式，所以使用的端点是设备的默认端点0。
@@ -323,7 +323,9 @@ USB标准请求类型如下
 
 
 
-#### 参考
+## 参考
+
+
 
 [USB中文网](http://www.usbzh.com/article/detail-177.html)
 
