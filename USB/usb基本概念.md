@@ -155,6 +155,24 @@ USB总线传输数据以包为基本单位，一个包被分成不同的域，�
 
 
 
+| 描述符                                                       | 应用                               | 数值类型 |
+| ------------------------------------------------------------ | ---------------------------------- | -------- |
+| [设备描述符](http://www.usbzh.com/article/detail-104.html)   | 所有设备必须有，只能一个           | 1        |
+| 配置描述符                                                   | 所有设备必须有，至少一个           | 2        |
+| [字符串描述符](http://www.usbzh.com/article/detail-53.html)  | 可选择                             | 3        |
+| [接口描述符](http://www.usbzh.com/article/detail-64.html)    | 每一个接口一个                     | 4        |
+| [端点描述符](http://www.usbzh.com/article/detail-56.html)    | 除端点0之外的每个端点一个          | 5        |
+| [设备限定描述符](http://www.usbzh.com/article/detail-50.html) Device_Qualiffier | 同时支持全速与高速的设备必须有一个 | 6        |
+| [其它速率配置描述符](http://www.usbzh.com/article/detail-88.html) Other_Speed_Configuration |                                    | 7        |
+| Interface_power                                              |                                    | 8        |
+| HID描述符                                                    | HID设备必须有                      | 21       |
+| Hub描述符                                                    |                                    | 29       |
+| 报表描述符                                                   | HID设备必须有                      | 22       |
+|                                                              |                                    |          |
+| 实体描述符 Physical                                          | 可选择的                           | 23       |
+
+
+
 ##### 设备描述符
 
 ```C

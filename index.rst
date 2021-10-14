@@ -15,8 +15,13 @@
    01RTOS/02RT-thread_启动流程/startup
    01RTOS/03RT-thread_IO设备模型/RT-thread_IO设备模型
 
+.. toctree::
+   :maxdepth: 2
+   :numbered:
+   :caption: USB
 
-   #MCU/音频基本
+   USB/usb基本概念
+   USB/usb实例
 
 .. toctree::
    :maxdepth: 1
