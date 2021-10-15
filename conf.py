@@ -33,7 +33,6 @@ extensions = [
   'sphinx_markdown_tables',
   'sphinx.ext.autosectionlabel',
   'sphinx_rtd_theme',
-  'myst_parser'
 ]
 
 # The suffix(es) of source filenames.
@@ -70,11 +69,3 @@ html_static_path = ['_static']
 
 # default hightlight languate
 #highlight_language = "sh"
-
-source_suffix = {
-    '.rst': 'restructuredtext',
-    '.txt': 'markdown',
-    '.md': 'markdown',
-}
-
-
