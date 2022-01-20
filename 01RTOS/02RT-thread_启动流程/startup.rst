@@ -89,7 +89,7 @@ RK2108 SDK提供的启动文件路径为：
         rt_system_scheduler_init();
 
         /* init application */
-        rt_application_init();
+        rt_application_init();   //创建第一个线程
 
         /* init timer thread */
         rt_system_timer_thread_init();
@@ -104,12 +104,16 @@ RK2108 SDK提供的启动文件路径为：
         return;
     }
 
-在rt_hw_board_init中初始化板级相关内容，在rt_application_init中创建用户线程相关内容。总的内容大致如下，
+在rt_hw_board_init中初始化板级相关内容，总的内容大致如下，
 
 - 初始化与系统相关的硬件；
 - 初始化系统内核对象，例如定时器、调度器、信号；
 - 创建用户线程，在用户线程中对各类模块依次进行初始化；
 - 初始化定时器线程、空闲线程，并启动调度器。
+
+
+**在rt_application_init函数中会创建第一个线程前，会先创建以INIT_APP_EXPORT形式导出的各个线程，并创建rt_init_thread_entry
+作为用户的一个线程**
 
 启动框图如下
 
